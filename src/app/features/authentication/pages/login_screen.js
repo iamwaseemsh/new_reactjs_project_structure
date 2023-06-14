@@ -1,20 +1,22 @@
 import { Button } from 'primereact/button'
 import { InputText } from 'primereact/inputtext'
 import React, { useEffect } from 'react'
-import appAssets from '../../../../constants/appAssets';
 import { useFormik } from "formik";
 import * as Yup from 'yup';
 import { useDispatch, useSelector } from 'react-redux';
-import CustomInputField from '../../../components/custom_input_field';
-import { loginUser } from '../../../../redux/auth_slices/login_user_slice';
 import { toast } from 'react-toastify';
+import { loginUser } from '../manager/auth_slice';
+import appAssets from '../../../constants/appAssets';
+import CustomInputField from '../../../components/custom_input_field';
+import toastService from '../../../services/toast_service';
 
 export default function LoginScreen() {
 
   //redux
-  const { success, error, loading } = useSelector((state) => state.loginUser);
+  const { success, error, loading } = useSelector((state) => state.auth);
 
   //hooks
+
 
   useEffect(() => {
     if (success !== undefined) {
@@ -38,6 +40,7 @@ export default function LoginScreen() {
     },
     validationSchema: validationSchema,
     onSubmit: async (data) => {
+
       dispatch(loginUser(data));
 
       console.log(data);

@@ -1,13 +1,14 @@
 import Axios from 'axios';
-import appUrl from '../../constants/appUrl';
-import { axiosApi } from '../../services/axios_api';
+import appUrl from '../../../constants/appUrl';
+
 
 const { createSlice, createAsyncThunk } = require('@reduxjs/toolkit');
 
-const loginUserReducer = createSlice({
-    name: 'loginUser',
+const authSlice = createSlice({
+    name: 'authSlice',
     initialState: {},
     extraReducers: (builder) => {
+        
         builder
             .addCase(loginUser.pending, (state, action) => {
                 return { loading: true }
@@ -29,7 +30,7 @@ const loginUserReducer = createSlice({
     },
 });
 
-export default loginUserReducer.reducer;
+export default authSlice.reducer;
 
 // Thunks
 export const loginUser = createAsyncThunk('loginUser/fetch', async (body, { rejectWithValue, fulfillWithValue }) => {

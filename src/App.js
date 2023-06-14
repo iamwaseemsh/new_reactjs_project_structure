@@ -19,6 +19,10 @@ import './assets/demo/flags/flags.css';
 import './assets/demo/Demos.scss';
 import './assets/layout/layout.scss';
 import './App.scss';
+import ProductListingScreens from './app/features/products/pages/product_listing_screen';
+import { useSelector } from 'react-redux';
+import LoginScreen from './app/features/authentication/pages/login_screen';
+import { ToastContainer } from 'react-toastify';
 
 const App = () => {
     const [layoutMode, setLayoutMode] = useState('static');
@@ -134,51 +138,10 @@ const App = () => {
         {
             label: 'Home',
             items: [{
-                label: 'Dashboard', icon: 'pi pi-fw pi-home', to: '/'
+                label: 'Products', icon: 'pi pi-fw pi-home', to: '/'
             }]
         },
-        {
-            label: 'UI Components', icon: 'pi pi-fw pi-sitemap',
-            items: [
-                { label: 'Form Layout', icon: 'pi pi-fw pi-id-card', to: '/formlayout' },
-                { label: 'Input', icon: 'pi pi-fw pi-check-square', to: '/input' },
-                { label: "Float Label", icon: "pi pi-fw pi-bookmark", to: "/floatlabel" },
-                { label: "Invalid State", icon: "pi pi-fw pi-exclamation-circle", to: "invalidstate" },
-                { label: 'Button', icon: 'pi pi-fw pi-mobile', to: '/button' },
-                { label: 'Table', icon: 'pi pi-fw pi-table', to: '/table' },
-                { label: 'List', icon: 'pi pi-fw pi-list', to: '/list' },
-                { label: 'Tree', icon: 'pi pi-fw pi-share-alt', to: '/tree' },
-                { label: 'Panel', icon: 'pi pi-fw pi-tablet', to: '/panel' },
-                { label: 'Overlay', icon: 'pi pi-fw pi-clone', to: '/overlay' },
-                { label: "Media", icon: "pi pi-fw pi-image", to: "/media" },
-                { label: 'Menu', icon: 'pi pi-fw pi-bars', to: '/menu' },
-                { label: 'Message', icon: 'pi pi-fw pi-comment', to: '/messages' },
-                { label: 'File', icon: 'pi pi-fw pi-file', to: '/file' },
-                { label: 'Chart', icon: 'pi pi-fw pi-chart-bar', to: '/chart' },
-                { label: 'Misc', icon: 'pi pi-fw pi-circle-off', to: '/misc' },
-            ]
-        },
-        {
-            label: 'UI Blocks',
-            items: [
-                { label: 'Free Blocks', icon: 'pi pi-fw pi-eye', to: '/blocks', badge: "NEW" },
-                { label: 'All Blocks', icon: 'pi pi-fw pi-globe', url: 'https://www.primefaces.org/primeblocks-react' }
-            ]
-        },
-        {
-            label: 'Icons',
-            items: [
-                { label: 'PrimeIcons', icon: 'pi pi-fw pi-prime', to: '/icons' }
-            ]
-        },
-        {
-            label: 'Pages', icon: 'pi pi-fw pi-clone',
-            items: [
-                { label: 'Crud', icon: 'pi pi-fw pi-user-edit', to: '/crud' },
-                { label: 'Timeline', icon: 'pi pi-fw pi-calendar', to: '/timeline' },
-                { label: 'Empty', icon: 'pi pi-fw pi-circle-off', to: '/empty' }
-            ]
-        },
+       
         {
             label: 'Menu Hierarchy', icon: 'pi pi-fw pi-search',
             items: [
@@ -257,35 +220,49 @@ const App = () => {
         'p-ripple-disabled': ripple === false,
         'layout-theme-light': layoutColorMode === 'light'
     });
+    
+
+    const { user } = useSelector((state)=>state.auth);
 
     return (
-        <div className={wrapperClass} onClick={onWrapperClick}>
-            <Tooltip ref={copyTooltipRef} target=".block-action-copy" position="bottom" content="Copied to clipboard" event="focus" />
+      <div>
+         <ToastContainer />
 
-            <AppTopbar onToggleMenuClick={onToggleMenuClick} layoutColorMode={layoutColorMode}
-                mobileTopbarMenuActive={mobileTopbarMenuActive} onMobileTopbarMenuClick={onMobileTopbarMenuClick} onMobileSubTopbarMenuClick={onMobileSubTopbarMenuClick} />
 
-            <div className="layout-sidebar" onClick={onSidebarClick}>
-                <AppMenu model={menu} onMenuItemClick={onMenuItemClick} layoutColorMode={layoutColorMode} />
-            </div>
+     {   user === undefined ?
+                  <Route path="/" exact component={LoginScreen} />
 
-            <div className="layout-main-container">
-                <div className="layout-main">
-                    {/* <Route path="/" exact render={() => <Dashboard colorMode={layoutColorMode} location={location} />} /> */}
-                  
-                </div>
+     :
+     <div className={wrapperClass} onClick={onWrapperClick}>
+     <Tooltip ref={copyTooltipRef} target=".block-action-copy" position="bottom" content="Copied to clipboard" event="focus" />
 
-                <AppFooter layoutColorMode={layoutColorMode} />
-            </div>
+     <AppTopbar onToggleMenuClick={onToggleMenuClick} layoutColorMode={layoutColorMode}
+         mobileTopbarMenuActive={mobileTopbarMenuActive} onMobileTopbarMenuClick={onMobileTopbarMenuClick} onMobileSubTopbarMenuClick={onMobileSubTopbarMenuClick} />
 
-            <AppConfig rippleEffect={ripple} onRippleEffect={onRipple} inputStyle={inputStyle} onInputStyleChange={onInputStyleChange}
-                layoutMode={layoutMode} onLayoutModeChange={onLayoutModeChange} layoutColorMode={layoutColorMode} onColorModeChange={onColorModeChange} />
+     <div className="layout-sidebar" onClick={onSidebarClick}>
+         <AppMenu model={menu} onMenuItemClick={onMenuItemClick} layoutColorMode={layoutColorMode} />
+     </div>
 
-            <CSSTransition classNames="layout-mask" timeout={{ enter: 200, exit: 200 }} in={mobileMenuActive} unmountOnExit>
-                <div className="layout-mask p-component-overlay"></div>
-            </CSSTransition>
+     <div className="layout-main-container">
+         <div className="layout-main">
+             <Route path="/" exact component={ProductListingScreens} />
+         </div>
 
-        </div>
+         <AppFooter layoutColorMode={layoutColorMode} />
+     </div>
+
+     <AppConfig rippleEffect={ripple} onRippleEffect={onRipple} inputStyle={inputStyle} onInputStyleChange={onInputStyleChange}
+         layoutMode={layoutMode} onLayoutModeChange={onLayoutModeChange} layoutColorMode={layoutColorMode} onColorModeChange={onColorModeChange} />
+
+     <CSSTransition classNames="layout-mask" timeout={{ enter: 200, exit: 200 }} in={mobileMenuActive} unmountOnExit>
+         <div className="layout-mask p-component-overlay"></div>
+     </CSSTransition>
+
+ </div>
+
+
+          }
+      </div>
     );
 
 }
