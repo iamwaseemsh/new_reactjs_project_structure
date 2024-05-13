@@ -32,6 +32,12 @@ export default function LoginScreen() {
   const dispatch = useDispatch();
 
   //forms
+  const validationSchema = Yup.object().shape({
+
+    password: Yup.string().required("Password is required.").min(8, 'Minimum length should be 8'),
+    email: Yup.string().required("Email is required."),
+
+  });
 
   const formik = useFormik({
     initialValues: {
@@ -49,12 +55,7 @@ export default function LoginScreen() {
   });
 
 
-  const validationSchema = Yup.object().shape({
-
-    password: Yup.string().required("Password is required.").min(8, 'Minimum length should be 8'),
-    email: Yup.string().required("Email is required."),
-
-  });
+ 
 
 
   return (
