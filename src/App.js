@@ -19,10 +19,15 @@ import './assets/demo/flags/flags.css';
 import './assets/demo/Demos.scss';
 import './assets/layout/layout.scss';
 import './App.scss';
-import ProductListingScreens from './app/features/products/pages/product_listing_screen';
 import { useSelector } from 'react-redux';
 import LoginScreen from './app/features/authentication/pages/login_screen';
 import { ToastContainer } from 'react-toastify';
+import HomeScreen from './app/features/home/screen/home_screen';
+import PanelUsersScreen from './app/features/admin/screens/panel_users_screen';
+import RolesManagmentScreen from './app/features/admin/screens/roles_management_screen';
+import AppUsersScreen from './app/features/app/screens/app_users_scren';
+import ModesScreen from './app/features/app/screens/modes_screen';
+import AddPostsScreen from './app/features/app/screens/add_posts_screen';
 
 const App = () => {
     const [layoutMode, setLayoutMode] = useState('static');
@@ -138,62 +143,39 @@ const App = () => {
         {
             label: 'Home',
             items: [{
-                label: 'Products', icon: 'pi pi-fw pi-home', to: '/'
+                label: 'Home', icon: 'pi pi-fw pi-home', to: '/'
             }]
         },
-       
         {
-            label: 'Menu Hierarchy', icon: 'pi pi-fw pi-search',
+            label: 'Manage',
             items: [
+
                 {
-                    label: 'Submenu 1', icon: 'pi pi-fw pi-bookmark',
-                    items: [
-                        {
-                            label: 'Submenu 1.1', icon: 'pi pi-fw pi-bookmark',
-                            items: [
-                                { label: 'Submenu 1.1.1', icon: 'pi pi-fw pi-bookmark' },
-                                { label: 'Submenu 1.1.2', icon: 'pi pi-fw pi-bookmark' },
-                                { label: 'Submenu 1.1.3', icon: 'pi pi-fw pi-bookmark' },
-                            ]
-                        },
-                        {
-                            label: 'Submenu 1.2', icon: 'pi pi-fw pi-bookmark',
-                            items: [
-                                { label: 'Submenu 1.2.1', icon: 'pi pi-fw pi-bookmark' },
-                                { label: 'Submenu 1.2.2', icon: 'pi pi-fw pi-bookmark' }
-                            ]
-                        },
-                    ]
+                    label: 'Panel Users', icon: 'pi pi-fw pi-users', to: '/admin/users'
                 },
                 {
-                    label: 'Submenu 2', icon: 'pi pi-fw pi-bookmark',
-                    items: [
-                        {
-                            label: 'Submenu 2.1', icon: 'pi pi-fw pi-bookmark',
-                            items: [
-                                { label: 'Submenu 2.1.1', icon: 'pi pi-fw pi-bookmark' },
-                                { label: 'Submenu 2.1.2', icon: 'pi pi-fw pi-bookmark' },
-                                { label: 'Submenu 2.1.3', icon: 'pi pi-fw pi-bookmark' },
-                            ]
-                        },
-                        {
-                            label: 'Submenu 2.2', icon: 'pi pi-fw pi-bookmark',
-                            items: [
-                                { label: 'Submenu 2.2.1', icon: 'pi pi-fw pi-bookmark' },
-                                { label: 'Submenu 2.2.2', icon: 'pi pi-fw pi-bookmark' }
-                            ]
-                        }
-                    ]
-                }
+                    label: 'Roles & Permissions', icon: 'pi pi-fw pi-user-edit', to: '/admin/users/roles'
+                },
             ]
         },
+
         {
-            label: 'Get Started',
+            label: 'App',
             items: [
-                { label: 'Documentation', icon: 'pi pi-fw pi-question', command: () => { window.location = "#/documentation" } },
-                { label: 'View Source', icon: 'pi pi-fw pi-search', command: () => { window.location = "https://github.com/primefaces/sakai-react" } }
+
+                {
+                    label: 'Users', icon: 'pi pi-fw pi-users', to: '/app/users'
+                },
+                {
+                    label: 'Modes', icon: 'pi pi-fw pi-heart', to: '/app/modes'
+                },
+                {
+                    label: 'Posts', icon: 'pi pi-fw pi-play-circle', to: '/app/posts'
+                },
             ]
-        }
+        },
+
+
     ];
 
     const addClass = (element, className) => {
@@ -220,49 +202,82 @@ const App = () => {
         'p-ripple-disabled': ripple === false,
         'layout-theme-light': layoutColorMode === 'light'
     });
-    
 
-    const { user } = useSelector((state)=>state.auth);
+
+    const authState = useSelector((state) => state.auth);
+ 
+
 
     return (
-      <div>
-         <ToastContainer />
+        <div>
+            <ToastContainer />
 
 
-     {   user === undefined ?
-                  <Route path="/" exact component={LoginScreen} />
+            {authState === null ?
+                <Route path="/" exact component={LoginScreen} />
 
-     :
-     <div className={wrapperClass} onClick={onWrapperClick}>
-     <Tooltip ref={copyTooltipRef} target=".block-action-copy" position="bottom" content="Copied to clipboard" event="focus" />
+                :
+                <div className={wrapperClass} onClick={onWrapperClick}>
+                    <Tooltip ref={copyTooltipRef} target=".block-action-copy" position="bottom" content="Copied to clipboard" event="focus" />
 
-     <AppTopbar onToggleMenuClick={onToggleMenuClick} layoutColorMode={layoutColorMode}
-         mobileTopbarMenuActive={mobileTopbarMenuActive} onMobileTopbarMenuClick={onMobileTopbarMenuClick} onMobileSubTopbarMenuClick={onMobileSubTopbarMenuClick} />
+                    <AppTopbar onToggleMenuClick={onToggleMenuClick} layoutColorMode={layoutColorMode}
+                        mobileTopbarMenuActive={mobileTopbarMenuActive} onMobileTopbarMenuClick={onMobileTopbarMenuClick} onMobileSubTopbarMenuClick={onMobileSubTopbarMenuClick} />
 
-     <div className="layout-sidebar" onClick={onSidebarClick}>
-         <AppMenu model={menu} onMenuItemClick={onMenuItemClick} layoutColorMode={layoutColorMode} />
-     </div>
+                    <div className="layout-sidebar" onClick={onSidebarClick}>
+                        <AppMenu model={authState?.user?.menu} onMenuItemClick={onMenuItemClick} layoutColorMode={layoutColorMode} />
+                    </div>
 
-     <div className="layout-main-container">
-         <div className="layout-main">
-             <Route path="/" exact component={ProductListingScreens} />
-         </div>
+                    <div className="layout-main-container">
+                        <div className="layout-main">
+                            <Route
+                                exact
+                                path="/"
+                                component={HomeScreen}
+                            />
+                            <Route
+                                exact
+                                path="/admin/users"
+                                component={PanelUsersScreen}
+                            />
+                            <Route
+                                exact
+                                path="/app/users"
+                                component={AppUsersScreen}
+                            />
+                            <Route
+                                exact
+                                path="/admin/users/roles"
+                                component={RolesManagmentScreen}
+                            />
+                            <Route
+                                exact
+                                path="/app/modes"
+                                component={ModesScreen}
+                            />
+                            <Route
+                                exact
+                                path="/app/posts"
+                                component={AddPostsScreen}
+                            />
 
-         <AppFooter layoutColorMode={layoutColorMode} />
-     </div>
-
-     <AppConfig rippleEffect={ripple} onRippleEffect={onRipple} inputStyle={inputStyle} onInputStyleChange={onInputStyleChange}
-         layoutMode={layoutMode} onLayoutModeChange={onLayoutModeChange} layoutColorMode={layoutColorMode} onColorModeChange={onColorModeChange} />
-
-     <CSSTransition classNames="layout-mask" timeout={{ enter: 200, exit: 200 }} in={mobileMenuActive} unmountOnExit>
-         <div className="layout-mask p-component-overlay"></div>
-     </CSSTransition>
-
- </div>
+                        </div>
 
 
-          }
-      </div>
+                        <AppFooter layoutColorMode={layoutColorMode} />
+                    </div>
+
+                    <AppConfig rippleEffect={ripple} onRippleEffect={onRipple} inputStyle={inputStyle} onInputStyleChange={onInputStyleChange}
+                        layoutMode={layoutMode} onLayoutModeChange={onLayoutModeChange} layoutColorMode={layoutColorMode} onColorModeChange={onColorModeChange} />
+
+                    <CSSTransition classNames="layout-mask" timeout={{ enter: 200, exit: 200 }} in={mobileMenuActive} unmountOnExit>
+                        <div className="layout-mask p-component-overlay"></div>
+                    </CSSTransition>
+
+                </div>
+
+
+            }
+        </div>
     );
 
 }

@@ -1,23 +1,24 @@
 import appUrl from '../constants/appUrl';
 
-const axios = require('axios');
+import axios from "axios";
 const axiosApi = axios.create();
+axiosApi.defaults.baseURL = process.env.REACT_APP_BASE_URL;
 
 // Request interceptor for API calls
 axiosApi.interceptors.request.use(
   async config => {
-      const access_token=localStorage.getItem('accessToken')
-    config.headers = { 
+    const access_token = localStorage.getItem('accessToken')
+    config.headers = {
       'Authorization': `Bearer ${access_token}`,
       'Accept': 'application/json',
-      'Content-Type': 'application/x-www-form-urlencoded'
+      'Content-Type': 'application/json'
     }
     return config;
   },
-  
+
   error => {
     Promise.reject(error)
-});
+  });
 
 // Response interceptor for API calls
 axiosApi.interceptors.response.use((response) => {
@@ -26,7 +27,7 @@ axiosApi.interceptors.response.use((response) => {
   const originalRequest = error.config;
   if (error.response.status === 401 && !originalRequest._retry) {
     originalRequest._retry = true;
-    const access_token = await refreshAccessToken();            
+    const access_token = await refreshAccessToken();
     axios.defaults.headers.common['Authorization'] = 'Bearer ' + access_token;
     return axiosApi(originalRequest);
   }
@@ -36,17 +37,17 @@ axiosApi.interceptors.response.use((response) => {
 
 
 
-const refreshAccessToken=async()=>{
-    const refreshToken=localStorage.getItem('refreshToken');
-    if(refreshToken){
-        const {data}=await axios.post(appUrl.baseUrl+ 'auth/refreshToken',{
-            refreshToken:refreshToken
-        });
-        localStorage.setItem('accessToken',data.data.token)
-        return data.accessToken
-    }else{
-        return '';
-    }
+const refreshAccessToken = async () => {
+  const refreshToken = localStorage.getItem('refreshToken');
+  if (refreshToken) {
+    const { data } = await axios.post(appUrl.baseUrl + 'auth/refreshToken', {
+      refreshToken: refreshToken
+    });
+    localStorage.setItem('accessToken', data.data.token)
+    return data.accessToken
+  } else {
+    return '';
+  }
 
 
 }
@@ -54,4 +55,4 @@ const refreshAccessToken=async()=>{
 
 
 
-export {axiosApi}
+export { axiosApi }

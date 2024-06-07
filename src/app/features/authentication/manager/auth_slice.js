@@ -1,5 +1,6 @@
 import Axios from 'axios';
 import appUrl from '../../../constants/appUrl';
+import { axiosApi } from '../../../services/axios_api';
 
 
 const { createSlice, createAsyncThunk } = require('@reduxjs/toolkit');
@@ -14,8 +15,9 @@ const authSlice = createSlice({
                 return { loading: true }
             })
             .addCase(loginUser.fulfilled, (state, action) => {
+
                 localStorage.setItem("user", JSON.stringify(action.payload));
-                localStorage.setItem('accessToken',action.payload.token);
+                localStorage.setItem('accessToken',action.payload.accessToken);
                 localStorage.setItem('refreshToken',action.payload.refreshToken);
 
                 return { loading: false, user: action.payload }
@@ -31,13 +33,33 @@ const authSlice = createSlice({
 });
 
 export default authSlice.reducer;
+const parseMenuItem = (item)=>{
+
+    return {
+        "label": item.label,
+        "icon": item.icon,
+        "to": item.route,
+        "items": item.children?.map((e)=>parseMenuItem(e))
+    };
+
+}
 
 // Thunks
 export const loginUser = createAsyncThunk('loginUser/fetch', async (body, { rejectWithValue, fulfillWithValue }) => {
     try {
-        const { data } = await Axios.post(appUrl.baseUrl + appUrl.loginUser, body);
-        return fulfillWithValue(data.data);
+        console.log(body);
+        const { data } = await axiosApi.post("web/user/login", body);
+        console.log(data);
+        const rawMenu = data.data.role.pages.menu;
+        const menu = rawMenu.map((item)=>parseMenuItem(item));
+        
+        return fulfillWithValue({
+            ...data.data,
+            "menu": menu
+
+        });
     } catch (error) {
+        console.log(error);
         throw rejectWithValue(error.response && error.response.data.msg
             ? error.response.data.msg
             : error.message)
